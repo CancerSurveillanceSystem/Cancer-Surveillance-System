@@ -9,7 +9,7 @@ import { useRouter } from 'next/navigation';
 // Import team images
 import guillermo from '/public/team/guillermo.png';
 import panes from '/public/team/panes.png';
-import sheila from '/public/team/sheila.png';
+import sheila from '/public/team/sheila.jpg';
 import currie from '/public/team/currie.png';
 import ron from '/public/team/ron.png';
 import nathan from '/public/team/nathan.png';
