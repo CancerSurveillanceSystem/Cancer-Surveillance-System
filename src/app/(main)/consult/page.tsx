@@ -1264,7 +1264,7 @@ const ConsultPage = () => {
 
 		try {
 			const response = await fetch(
-				`${process.env.NEXT_PUBLIC_BACKEND_URL}patient/update/${searchFormData.patientId}`,
+				`${process.env.NEXT_PUBLIC_BACKEND_URL}css/patient/update/${searchFormData.patientId}`,
 				{
 					method: 'PUT',
 					headers: { 'Content-Type': 'application/json' },
