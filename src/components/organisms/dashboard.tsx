@@ -10,6 +10,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+} from "@/components/ui/dialog"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Calendar } from "@/components/ui/calendar";
 import { PatientsResponseSchema } from "@/packages/api/patient-list";
@@ -234,6 +239,70 @@ export const Dashboard = () => {
     fetchSubmittedWorkups();
   }, []);
 
+  // schedule a consult
+  const [scheduleConsultFormData, setScheduleConsultFormData] = useState({
+    patient_id: "",
+    doctor_id: "",
+    checkup_request_date: "",
+    checkup_confirmed_date: "",
+    checkup_start_time: "",
+    checkup_end_time: "",
+    checkup_status_id: 1,
+  });
+
+  const handleScheduleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    setScheduleConsultFormData({ ...scheduleConsultFormData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmitSchedule = (patientId: number) => async (e: React.FormEvent) => {
+
+    e.preventDefault();
+
+    try {
+      console.log(JSON.stringify(scheduleConsultFormData))
+      const requestBody = {
+        patient_id: patientId,
+        doctor_id: doctorInfo.doctorId,
+        checkup_request_date: scheduleConsultFormData.checkup_request_date,
+        checkup_confirmed_date: scheduleConsultFormData.checkup_request_date,
+        checkup_start_time: scheduleConsultFormData.checkup_start_time,
+        checkup_end_time: scheduleConsultFormData.checkup_end_time,
+        checkup_status_id: scheduleConsultFormData.checkup_status_id,
+      }
+      console.log(JSON.stringify(requestBody))
+      const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}css/checkup/schedule/add`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to schedule checkup");
+      }
+
+      alert("Checkup scheduled successfully!");
+      setScheduleConsultFormData({
+        patient_id: "",
+        doctor_id: requestBody.doctor_id,
+        checkup_request_date: "",
+        checkup_confirmed_date: "",
+        checkup_start_time: "",
+        checkup_end_time: "",
+        checkup_status_id: 1,
+      });
+    } catch (error) {
+      console.error(error);
+      alert("An error occurred while scheduling the checkup.");
+    }
+  };
+
+  const [hoverRow, setHoverRow] = useState<number | null>(null);
+
+
   return (
     <div className="flex flex-col justify-start items-center h-screen">
       <div className="p-16 flex justify-center">
@@ -249,11 +318,13 @@ export const Dashboard = () => {
               <h2 className="text-black font-bold tracking-wide text-xl py-1">Patient List</h2>
             </div>
             <Tabs defaultValue="today" className="w-full h-full">
-              <TabsList className="w-full bg-red-100">
-                <TabsTrigger value="today" className="w-1/3 data-[state=active]:text-white ">Today</TabsTrigger>
+              <TabsList className="w-full bg-red-100 shadow-md">
+                <TabsTrigger value="today" className="w-1/3 data-[state=active]:text-white">Today</TabsTrigger>
                 <TabsTrigger value="selected" className="w-1/3 data-[state=active]:text-white">Select</TabsTrigger>
                 <TabsTrigger value="allpatient" className="w-1/3 data-[state=active]:text-white">All</TabsTrigger>
               </TabsList>
+
+              {/** Today Tab */}
               <TabsContent value="today" className="text-black h-full">
                 <div className="max-h-72 overflow-y-auto">
                   <Table className="w-full">
@@ -268,15 +339,139 @@ export const Dashboard = () => {
                         </TableRow>
                       ) : todayPatients.length > 0 ? (
                         todayPatients.map((relation) => (
-                          <TableRow
+                          <div
                             key={relation.patient.patientId}
-                            className="h-6 border-none hover:bg-red-300"
+                            className={`relative h-12 transition-all duration-300 w-full ${hoverRow === relation.patient.patientId ? "" : "w-1/2 mx-auto"}`}
+                            onMouseEnter={() => setHoverRow(relation.patient.patientId)}
+                            onMouseLeave={() => setHoverRow(null)}
                           >
-                            <TableCell className="text-center text-black">
-                              {relation.patient.user.userFirstname}{" "}
-                              {relation.patient.user.userLastname}
-                            </TableCell>
-                          </TableRow>
+                            <TableRow
+                              className={`flex items-center justify-center border-0 ${hoverRow === relation.patient.patientId ? "w-1/2" : ""}`}
+                            >
+                              <TableCell className="text-center text-black">
+                                {relation.patient.user.userFirstname} {relation.patient.user.userLastname}
+                              </TableCell>
+                            </TableRow>
+                            {hoverRow === relation.patient.patientId && (
+                              <Dialog>
+                                <DialogTrigger>
+                                  <div
+                                    className="absolute top-1/2 right-0 transform -translate-y-5 p-1 px-2 bg-red-900 text-white shadow-lg rounded-md transition-opacity duration-300 hover:cursor-pointer"
+                                    onClick={() => console.log(relation.patient.patientId)}
+                                  >
+                                    Schedule an Appointment
+                                  </div>
+                                </DialogTrigger>
+                                <DialogContent className="bg-white w-full max-w-3xl">
+                                  <div className="mx-auto p-6 bg-white w-full">
+                                    <h2 className="text-xl font-semibold text-gray-800 mb-4">Schedule Checkup</h2>
+                                    <form onSubmit={handleSubmitSchedule(relation.patient.patientId)} className="space-y-4">
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          htmlFor="checkup_request_date"
+                                          className="text-sm font-semibold text-gray-700"
+                                        >
+                                          Request Date
+                                        </label>
+                                        <input
+                                          type="date"
+                                          id="checkup_request_date"
+                                          name="checkup_request_date"
+                                          value={scheduleConsultFormData.checkup_request_date}
+                                          onChange={handleScheduleChange}
+                                          className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                          required
+                                        />
+                                      </div>
+
+                                      <div className="flex w-full gap-4">
+                                        <div className="flex flex-col w-1/2">
+                                          <label
+                                            htmlFor="checkup_start_time"
+                                            className="text-sm font-semibold text-gray-700"
+                                          >
+                                            Start Time
+                                          </label>
+                                          <input
+                                            type="datetime-local"
+                                            id="checkup_start_time"
+                                            name="checkup_start_time"
+                                            value={scheduleConsultFormData.checkup_start_time.replace(" ", "T")}
+                                            onChange={(e) => {
+                                              const formattedValue = e.target.value.replace("T", " ") + ":00";
+                                              setScheduleConsultFormData((prevState) => ({
+                                                ...prevState,
+                                                checkup_start_time: formattedValue,
+                                              }));
+                                            }}
+                                            className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                            required
+                                          />
+                                        </div>
+
+                                        <div className="flex flex-col w-1/2">
+                                          <label
+                                            htmlFor="checkup_end_time"
+                                            className="text-sm font-semibold text-gray-700"
+                                          >
+                                            End Time
+                                          </label>
+                                          <input
+                                            type="datetime-local"
+                                            id="checkup_end_time"
+                                            name="checkup_end_time"
+                                            value={scheduleConsultFormData.checkup_end_time.replace(" ", "T")}
+                                            onChange={(e) => {
+                                              const formattedValue = e.target.value.replace("T", " ") + ":00";
+                                              setScheduleConsultFormData((prevState) => ({
+                                                ...prevState,
+                                                checkup_end_time: formattedValue,
+                                              }));
+                                            }}
+                                            className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                            required
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          htmlFor="checkup_status_id"
+                                          className="text-sm font-semibold text-gray-700"
+                                        >
+                                          Status
+                                        </label>
+                                        <select
+                                          id="checkup_status_id"
+                                          name="checkup_status_id"
+                                          value={scheduleConsultFormData.checkup_status_id}
+                                          onChange={handleScheduleChange}
+                                          className={`mt-1 p-2 border rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 hover:shadow-md transition-all duration-200 `}
+                                          required
+                                        >
+                                          <option value="" disabled>
+                                            Select status
+                                          </option>
+                                          <option value="1">Request</option>
+                                          <option value="2">Confirmed</option>
+                                          <option value="3">Done</option>
+                                          <option value="4">Cancelled</option>
+                                        </select>
+
+                                      </div>
+
+                                      <button
+                                        type="submit"
+                                        className="w-full bg-red-900 text-white py-2 px-4 rounded-md hover:bg-red-800 focus:outline-none focus:ring-1 focus:ring-red-500 focus:ring-offset-2"
+                                      >
+                                        Schedule Checkup
+                                      </button>
+                                    </form>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            )}
+                          </div>
                         ))
                       ) : (
                         <TableRow>
@@ -287,9 +482,11 @@ export const Dashboard = () => {
                   </Table>
                 </div>
               </TabsContent>
+
+              {/** Selected Tab */}
               <TabsContent value="selected" className="text-black">
                 <div className="max-h-72 overflow-y-auto">
-                  <Table className="w-full h-full">
+                  <Table className="w-full">
                     <TableBody>
                       {loadingScheduled ? (
                         <TableRow>
@@ -301,45 +498,142 @@ export const Dashboard = () => {
                         </TableRow>
                       ) : patientsScheduled.length > 0 ? (
                         patientsScheduled.map((relation) => (
-                          <TableRow
+                          <div
                             key={relation.patient.patientId}
-                            className="h-6 border-none hover:bg-red-300"
+                            className={`relative h-12 transition-all duration-300 w-full ${hoverRow === relation.patient.patientId ? "" : "w-1/2 mx-auto"}`}
+                            onMouseEnter={() => setHoverRow(relation.patient.patientId)}
+                            onMouseLeave={() => setHoverRow(null)}
                           >
-                            <TableCell className="text-center text-black">
-                              {relation.patient.user.userFirstname}{" "}
-                              {relation.patient.user.userLastname}
-                            </TableCell>
-                          </TableRow>
+                            <TableRow
+                              className={`flex items-center justify-center border-0 ${hoverRow === relation.patient.patientId ? "w-1/2" : ""}`}
+                            >
+                              <TableCell className="text-center text-black">
+                                {relation.patient.user.userFirstname} {relation.patient.user.userLastname}
+                              </TableCell>
+                            </TableRow>
+                            {hoverRow === relation.patient.patientId && (
+                              <Dialog>
+                                <DialogTrigger>
+                                  <div
+                                    className="absolute top-1/2 right-0 transform -translate-y-5 p-1 px-2 bg-red-900 text-white shadow-lg rounded-md transition-opacity duration-300 hover:cursor-pointer"
+                                    onClick={() => console.log(relation.patient.patientId)}
+                                  >
+                                    Schedule an Appointment
+                                  </div>
+                                </DialogTrigger>
+                                <DialogContent className="bg-white w-full max-w-3xl">
+                                  <div className="mx-auto p-6 bg-white w-full">
+                                    <h2 className="text-xl font-semibold text-gray-800 mb-4">Schedule Checkup</h2>
+                                    <form onSubmit={handleSubmitSchedule(relation.patient.patientId)} className="space-y-4">
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          htmlFor="checkup_request_date"
+                                          className="text-sm font-semibold text-gray-700"
+                                        >
+                                          Request Date
+                                        </label>
+                                        <input
+                                          type="date"
+                                          id="checkup_request_date"
+                                          name="checkup_request_date"
+                                          value={scheduleConsultFormData.checkup_request_date}
+                                          onChange={handleScheduleChange}
+                                          className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                          required
+                                        />
+                                      </div>
+
+                                      <div className="flex w-full gap-4">
+                                        <div className="flex flex-col w-1/2">
+                                          <label
+                                            htmlFor="checkup_start_time"
+                                            className="text-sm font-semibold text-gray-700"
+                                          >
+                                            Start Time
+                                          </label>
+                                          <input
+                                            type="datetime-local"
+                                            id="checkup_start_time"
+                                            name="checkup_start_time"
+                                            value={scheduleConsultFormData.checkup_start_time.replace(" ", "T")}
+                                            onChange={(e) => {
+                                              const formattedValue = e.target.value.replace("T", " ") + ":00";
+                                              setScheduleConsultFormData((prevState) => ({
+                                                ...prevState,
+                                                checkup_start_time: formattedValue,
+                                              }));
+                                            }}
+                                            className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                            required
+                                          />
+                                        </div>
+
+                                        <div className="flex flex-col w-1/2">
+                                          <label
+                                            htmlFor="checkup_end_time"
+                                            className="text-sm font-semibold text-gray-700"
+                                          >
+                                            End Time
+                                          </label>
+                                          <input
+                                            type="datetime-local"
+                                            id="checkup_end_time"
+                                            name="checkup_end_time"
+                                            value={scheduleConsultFormData.checkup_end_time.replace(" ", "T")}
+                                            onChange={(e) => {
+                                              const formattedValue = e.target.value.replace("T", " ") + ":00";
+                                              setScheduleConsultFormData((prevState) => ({
+                                                ...prevState,
+                                                checkup_end_time: formattedValue,
+                                              }));
+                                            }}
+                                            className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                            required
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          htmlFor="checkup_status_id"
+                                          className="text-sm font-semibold text-gray-700"
+                                        >
+                                          Status
+                                        </label>
+                                        <select
+                                          id="checkup_status_id"
+                                          name="checkup_status_id"
+                                          value={scheduleConsultFormData.checkup_status_id}
+                                          onChange={handleScheduleChange}
+                                          className={`mt-1 p-2 border rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 hover:shadow-md transition-all duration-200 `}
+                                          required
+                                        >
+                                          <option value="" disabled>
+                                            Select status
+                                          </option>
+                                          <option value="1">Request</option>
+                                          <option value="2">Confirmed</option>
+                                          <option value="3">Done</option>
+                                          <option value="4">Cancelled</option>
+                                        </select>
+
+                                      </div>
+
+                                      <button
+                                        type="submit"
+                                        className="w-full bg-red-900 text-white py-2 px-4 rounded-md hover:bg-red-800 focus:outline-none focus:ring-1 focus:ring-red-500 focus:ring-offset-2"
+                                      >
+                                        Schedule Checkup
+                                      </button>
+                                    </form>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+                            )}
+                          </div>
                         ))
                       ) : (
-                        <TableRow className="flex items-center justify-center w-full h-full">
-                          <TableCell className="text-center text-black">
-                            No patients found
-                          </TableCell>
-                        </TableRow>
-                      )}
-                    </TableBody>
-                  </Table>
-                </div>
-              </TabsContent>
-              <TabsContent value="allpatient" className="h-full">
-                <div className="max-h-72 overflow-y-auto">
-                  <Table className="w-full h-full">
-                    <TableBody>
-                      {loading ? (
                         <TableRow>
-                          <TableCell className="text-center text-black">Loading...</TableCell>
-                        </TableRow>
-                      ) : patients.length > 0 ? (
-                        patients.map((relation) => (
-                          <TableRow key={relation.patient.patientId} className="h-6 border-none hover:bg-red-200">
-                            <TableCell className="text-center text-black">
-                              {relation.patient.user.userFirstname} {relation.patient.user.userLastname}
-                            </TableCell>
-                          </TableRow>
-                        ))
-                      ) : (
-                        <TableRow className="flex items-center justify-center w-full h-full">
                           <TableCell className="text-center text-black">No patients found</TableCell>
                         </TableRow>
                       )}
@@ -347,7 +641,167 @@ export const Dashboard = () => {
                   </Table>
                 </div>
               </TabsContent>
-            </Tabs>
+
+              {/** All Patients Tab */}
+              <TabsContent value="allpatient" className="text-black h-full">
+                <div className="max-h-72 overflow-y-auto">
+                  <Table className="w-full">
+                    <TableBody>
+                      {loading ? (
+                        <TableRow>
+                          <TableCell className="text-center text-black">Loading...</TableCell>
+                        </TableRow>
+                      ) : patients.length > 0 ? (
+                        patients.map((relation) => (
+                          <div
+                            key={relation.patient.patientId}
+                            className={`relative h-12 transition-all duration-300 w-full ${hoverRow === relation.patient.patientId ? "" : "w-1/2 mx-auto"
+                              }`}
+                            onMouseEnter={() => setHoverRow(relation.patient.patientId)}
+                            onMouseLeave={() => setHoverRow(null)}
+                          >
+                            <TableRow
+                              className={`flex items-center justify-center border-0 transition-all ease-in-out duration-300 ${hoverRow === relation.patient.patientId ? "w-1/2" : ""
+                                }`}
+                            >
+                              <TableCell className="text-center text-black">
+                                {relation.patient.user.userFirstname} {relation.patient.user.userLastname}
+                              </TableCell>
+                            </TableRow>
+                            {hoverRow === relation.patient.patientId && (
+                              <Dialog>
+                                <DialogTrigger>
+                                  <div
+                                    className="absolute top-1/2 right-0 transform -translate-y-5 p-1 px-2 bg-red-900 text-white shadow-lg rounded-md transition-all ease-in-out duration-300 hover:cursor-pointer"
+                                    onClick={() => console.log(relation.patient.patientId)}
+                                  >
+                                    Schedule an Appointment
+                                  </div>
+                                </DialogTrigger>
+                                <DialogContent className="bg-white w-full max-w-3xl">
+                                  <div className="mx-auto p-6 bg-white w-full">
+                                    <h2 className="text-xl font-semibold text-gray-800 mb-4">Schedule Checkup</h2>
+                                    <form onSubmit={handleSubmitSchedule(relation.patient.patientId)} className="space-y-4">
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          htmlFor="checkup_request_date"
+                                          className="text-sm font-semibold text-gray-700"
+                                        >
+                                          Request Date
+                                        </label>
+                                        <input
+                                          type="date"
+                                          id="checkup_request_date"
+                                          name="checkup_request_date"
+                                          value={scheduleConsultFormData.checkup_request_date}
+                                          onChange={handleScheduleChange}
+                                          className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                          required
+                                        />
+                                      </div>
+
+                                      <div className="flex w-full gap-4">
+                                        <div className="flex flex-col w-1/2">
+                                          <label
+                                            htmlFor="checkup_start_time"
+                                            className="text-sm font-semibold text-gray-700"
+                                          >
+                                            Start Time
+                                          </label>
+                                          <input
+                                            type="datetime-local"
+                                            id="checkup_start_time"
+                                            name="checkup_start_time"
+                                            value={scheduleConsultFormData.checkup_start_time.replace(" ", "T")}
+                                            onChange={(e) => {
+                                              const formattedValue = e.target.value.replace("T", " ") + ":00";
+                                              setScheduleConsultFormData((prevState) => ({
+                                                ...prevState,
+                                                checkup_start_time: formattedValue,
+                                              }));
+                                            }}
+                                            className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                            required
+                                          />
+                                        </div>
+
+                                        <div className="flex flex-col w-1/2">
+                                          <label
+                                            htmlFor="checkup_end_time"
+                                            className="text-sm font-semibold text-gray-700"
+                                          >
+                                            End Time
+                                          </label>
+                                          <input
+                                            type="datetime-local"
+                                            id="checkup_end_time"
+                                            name="checkup_end_time"
+                                            value={scheduleConsultFormData.checkup_end_time.replace(" ", "T")}
+                                            onChange={(e) => {
+                                              const formattedValue = e.target.value.replace("T", " ") + ":00";
+                                              setScheduleConsultFormData((prevState) => ({
+                                                ...prevState,
+                                                checkup_end_time: formattedValue,
+                                              }));
+                                            }}
+                                            className={`mt-1 p-2 border rounded focus:outline-none focus:border-red-500 text-black`}
+                                            required
+                                          />
+                                        </div>
+                                      </div>
+
+                                      <div className="flex flex-col w-full">
+                                        <label
+                                          htmlFor="checkup_status_id"
+                                          className="text-sm font-semibold text-gray-700"
+                                        >
+                                          Status
+                                        </label>
+                                        <select
+                                          id="checkup_status_id"
+                                          name="checkup_status_id"
+                                          value={scheduleConsultFormData.checkup_status_id}
+                                          onChange={handleScheduleChange}
+                                          className={`mt-1 p-2 border rounded-lg shadow-sm bg-white text-gray-700 focus:outline-none focus:ring-1 focus:ring-red-500 focus:border-red-500 hover:shadow-md transition-all duration-200 `}
+                                          required
+                                        >
+                                          <option value="" disabled>
+                                            Select status
+                                          </option>
+                                          <option value="1">Request</option>
+                                          <option value="2">Confirmed</option>
+                                          <option value="3">Done</option>
+                                          <option value="4">Cancelled</option>
+                                        </select>
+
+                                      </div>
+
+                                      <button
+                                        type="submit"
+                                        className="w-full bg-red-900 text-white py-2 px-4 rounded-md hover:bg-red-800 focus:outline-none focus:ring-1 focus:ring-red-500 focus:ring-offset-2"
+                                      >
+                                        Schedule Checkup
+                                      </button>
+                                    </form>
+                                  </div>
+                                </DialogContent>
+                              </Dialog>
+
+                            )}
+                          </div>
+
+                        ))
+                      ) : (
+                        <TableRow>
+                          <TableCell className="text-center text-black">No patients found</TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </TabsContent>
+            </Tabs>;
+
           </div>
         </div>
         <div className="w-1/2">

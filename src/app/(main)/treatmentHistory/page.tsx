@@ -1341,17 +1341,17 @@ const TreatmentHistoryForm = () => {
 
               <div className="flex gap-4">
                 <div className="flex flex-col w-full">
-                  <label htmlFor="surgerySurgeon" className="text-sm font-semibold text-gray-700">Surgeon ID</label>
+                  <label htmlFor="surgerySurgeon" className="text-sm font-semibold text-gray-700">Surgeon</label>
                   <select
                     name="SURGERY_SURGEON"
                     value={surgeryFormData.SURGERY_SURGEON || ''}
                     onChange={handleSurgeryDoctor}
                     className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-red-500 text-black"
                   >
-                    <option value="">Select a doctor</option>
+                    {/* <option value="">Select a doctor</option> */}
                     {doctors.map((doctor) => (
                       <option key={doctor.doctorId} value={doctor.doctorId}>
-                        {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName} ({doctor.hospital.hospitalName})
+                        {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName}
                       </option>
                     ))}
                   </select>
@@ -1365,7 +1365,7 @@ const TreatmentHistoryForm = () => {
                     onChange={handleSurgeryChangeHospital}
                     className="mt-1 h-10 hover:border-red-200 p-2 border rounded focus:outline-none focus:border-red-500 text-black"
                   >
-                    <option value="">Select a hospital</option> {/* Optional placeholder */}
+                    {/* <option value="">Select a hospital</option> */}
                     {hospitals.map((hospital) => (
                       <option key={hospital.hospitalId} value={hospital.hospitalId}>
                         {hospital.hospitalName}
@@ -1378,6 +1378,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full">
                   <label htmlFor="surgeryOperation" className="text-sm font-semibold text-gray-700">Surgery Operation</label>
                   <input
+                    required
                     type="text"
                     name="SURGERY_OPERATION"
                     value={surgeryFormData.SURGERY_OPERATION}
@@ -1390,6 +1391,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full">
                   <label htmlFor="surgeryDate" className="text-sm font-semibold text-gray-700">Surgery Date</label>
                   <input
+                    required
                     type="date"
                     name="SURGERY_DATE"
                     value={surgeryFormData.SURGERY_DATE}
@@ -1432,6 +1434,7 @@ const TreatmentHistoryForm = () => {
               <div className="flex flex-col w-full max-h-44">
                 <label htmlFor="surgeryFindings" className="text-sm font-semibold text-gray-700">Surgery Findings</label>
                 <textarea
+                  required
                   name="SURGERY_FINDINGS"
                   value={surgeryFormData.SURGERY_FINDINGS}
                   onChange={handleSurgeryChange}
@@ -1495,10 +1498,10 @@ const TreatmentHistoryForm = () => {
                     onChange={handleradxDoctor}
                     className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-red-500 text-black"
                   >
-                    <option value="">Select a doctor</option>
+                    {/* <option value="">Select a doctor</option> */}
                     {doctors.map((doctor) => (
                       <option key={doctor.doctorId} value={doctor.doctorId}>
-                        {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName} ({doctor.hospital.hospitalName})
+                        {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName}
                       </option>
                     ))}
                   </select>
@@ -1512,7 +1515,7 @@ const TreatmentHistoryForm = () => {
                     onChange={handleradxChangeHospital}
                     className="mt-1 h-10 hover:border-red-200 p-2 border rounded focus:outline-none focus:border-red-500 text-black"
                   >
-                    <option value="">Select a hospital</option> {/* Optional placeholder */}
+                    {/* <option value="">Select a hospital</option> */}
                     {hospitals.map((hospital) => (
                       <option key={hospital.hospitalId} value={hospital.hospitalId}>
                         {hospital.hospitalName}
@@ -1526,6 +1529,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full">
                   <label htmlFor="RADRX_TYPE" className="text-sm font-semibold text-gray-700">RADRX Type</label>
                   <input
+                    required
                     type="number"
                     name="RADRX_TYPE"
                     value={radiationFormData.RADRX_TYPE}
@@ -1538,6 +1542,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full">
                   <label htmlFor="RADRX_INITIALDATE" className="text-sm font-semibold text-gray-700">Initial Date</label>
                   <input
+                    required
                     type="date"
                     name="RADRX_INITIALDATE"
                     value={radiationFormData.RADRX_INITIALDATE}
@@ -1562,6 +1567,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full">
                   <label htmlFor="RADRX_DOSE" className="text-sm font-semibold text-gray-700">Dose</label>
                   <input
+                    required
                     type="number"
                     name="RADRX_DOSE"
                     value={radiationFormData.RADRX_DOSE}
@@ -1574,6 +1580,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full">
                   <label htmlFor="RADRX_BODYSITE" className="text-sm font-semibold text-gray-700">Body Site</label>
                   <input
+                    required
                     type="text"
                     name="RADRX_BODYSITE"
                     value={radiationFormData.RADRX_BODYSITE}
@@ -1586,6 +1593,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full relative" ref={dropdownRadRefStatus}>
                   <label htmlFor="RADRX_STATUS" className="text-sm font-semibold text-gray-700">Status</label>
                   <input
+                    required
                     type="text"
                     name="RADRX_STATUS"
                     value={selectedStatus}
@@ -1616,6 +1624,7 @@ const TreatmentHistoryForm = () => {
                   <div className="mt-3 flex items-center space-x-4">
                     <label className="flex items-center text-black">
                       <input
+                        required
                         type="radio"
                         name="RADRX_ISCOMPLETED"
                         value="Y"
@@ -1694,10 +1703,10 @@ const TreatmentHistoryForm = () => {
                     onChange={handlehormoDoctor}
                     className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-red-500 text-black"
                   >
-                    <option value="">Select a doctor</option>
+                    {/* <option value="">Select a doctor</option> */}
                     {doctors.map((doctor) => (
                       <option key={doctor.doctorId} value={doctor.doctorId}>
-                        {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName} ({doctor.hospital.hospitalName})
+                        {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName}
                       </option>
                     ))}
                   </select>
@@ -1707,6 +1716,7 @@ const TreatmentHistoryForm = () => {
                   <div className="flex flex-col w-full">
                     <label htmlFor="hormonalDrug" className="text-sm font-semibold text-gray-700">Hormonal Drug</label>
                     <input
+                      required
                       type="text"
                       name="hormonalDrug"
                       value={hormonalFormData.hormonalDrug}
@@ -1719,6 +1729,7 @@ const TreatmentHistoryForm = () => {
                   <div className="flex flex-col w-2/12">
                     <label htmlFor="hormonalDose" className="text-sm font-semibold text-gray-700">Hormonal Dose</label>
                     <input
+                      required
                       type="number"
                       name="hormonalDose"
                       value={hormonalFormData.hormonalDose}
@@ -1731,6 +1742,7 @@ const TreatmentHistoryForm = () => {
                   <div className="flex flex-col w-full">
                     <label htmlFor="hormonalInitialDate" className="text-sm font-semibold text-gray-700">Initial Date</label>
                     <input
+                      required
                       type="date"
                       name="hormonalInitialDate"
                       value={hormonalFormData.hormonalInitialDate}
@@ -1754,6 +1766,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full relative" ref={dropdownHormonalRefStatus}>
                   <label htmlFor="hormonalStatus" className="text-sm font-semibold text-gray-700">Status</label>
                   <input
+                    required
                     type="text"
                     name="hormonalStatus"
                     value={selectedHormonalStatus}
@@ -1844,10 +1857,10 @@ const TreatmentHistoryForm = () => {
                     onChange={handleimuDoctor}
                     className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-red-500 text-black"
                   >
-                    <option value="">Select a doctor</option>
+                    {/* <option value="">Select a doctor</option> */}
                     {doctors.map((doctor) => (
                       <option key={doctor.doctorId} value={doctor.doctorId}>
-                        {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName} ({doctor.hospital.hospitalName})
+                        {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName}
                       </option>
                     ))}
                   </select>
@@ -1861,7 +1874,7 @@ const TreatmentHistoryForm = () => {
                     onChange={handleimuChangeHospital}
                     className="mt-1 h-10 hover:border-red-200 p-2 border rounded focus:outline-none focus:border-red-500 text-black"
                   >
-                    <option value="">Select a hospital</option> {/* Optional placeholder */}
+                    {/* <option value="">Select a hospital</option> */}
                     {hospitals.map((hospital) => (
                       <option key={hospital.hospitalId} value={hospital.hospitalId}>
                         {hospital.hospitalName}
@@ -1875,6 +1888,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full">
                   <label htmlFor="immunorxDrug" className="text-sm font-semibold text-gray-700">Immunotherapy Drug</label>
                   <input
+                    required
                     type="text"
                     name="immunorxDrug"
                     value={immunorxFormData.immunorxDrug}
@@ -1887,6 +1901,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full">
                   <label htmlFor="immunorxInitialDate" className="text-sm font-semibold text-gray-700">Initial Date</label>
                   <input
+                    required
                     type="date"
                     name="immunorxInitialDate"
                     value={immunorxFormData.immunorxInitialDate}
@@ -1911,6 +1926,7 @@ const TreatmentHistoryForm = () => {
                 <div className="flex flex-col w-full relative" ref={dropdownRefImmunoRx}>
                   <label htmlFor="immunorxStatus" className="text-sm font-semibold text-gray-700">Status</label>
                   <input
+                    required
                     type="text"
                     name="immunorxStatus"
                     value={selectedImmunoRxStatus}
@@ -2015,10 +2031,10 @@ const TreatmentHistoryForm = () => {
                       onChange={handlechemoDoctor}
                       className="h-10 mt-1 p-2 border border-gray-200 rounded focus:outline-none focus:border-red-500 text-black"
                     >
-                      <option value="">Select a doctor</option>
+                      {/* <option value="">Select a doctor</option> */}
                       {doctors.map((doctor) => (
                         <option key={doctor.doctorId} value={doctor.doctorId}>
-                          {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName} ({doctor.hospital.hospitalName})
+                          {doctor.user.userFirstname} {doctor.user.userLastname} - {doctor.specialty.specialtyName}
                         </option>
                       ))}
                     </select>
@@ -2032,7 +2048,7 @@ const TreatmentHistoryForm = () => {
                       onChange={handlechemoChangeHospital}
                       className="mt-1 h-10 hover:border-red-200 p-2 border rounded focus:outline-none focus:border-red-500 text-black"
                     >
-                      <option value="">Select a hospital</option> {/* Optional placeholder */}
+                      {/* <option value="">Select a hospital</option> */}
                       {hospitals.map((hospital) => (
                         <option key={hospital.hospitalId} value={hospital.hospitalId}>
                           {hospital.hospitalName}
@@ -2046,6 +2062,7 @@ const TreatmentHistoryForm = () => {
                   <div className="flex flex-col w-full relative" ref={dropdownRefChemoType}>
                     <label htmlFor="chemoType" className="text-sm font-semibold text-gray-700">Chemotherapy Type</label>
                     <input
+                      required
                       type="text"
                       name="CHEMO_TYPE"
                       value={selectedChemoType}
@@ -2072,6 +2089,7 @@ const TreatmentHistoryForm = () => {
                   <div className="flex flex-col w-full">
                     <label htmlFor="chemoProtocol" className="text-sm font-semibold text-gray-700">Chemotherapy Protocol</label>
                     <input
+                      required
                       type="number"
                       name="CHEMO_PROTOCOL"
                       value={chemoFormData.CHEMO_PROTOCOL}
@@ -2098,6 +2116,7 @@ const TreatmentHistoryForm = () => {
                   <div className="flex flex-col w-full">
                     <label htmlFor="chemoInitialDate" className="text-sm font-semibold text-gray-700">Initial Date</label>
                     <input
+                      required
                       type="date"
                       name="CHEMO_INITIALDATE"
                       value={chemoFormData.CHEMO_INITIALDATE}
@@ -2122,6 +2141,7 @@ const TreatmentHistoryForm = () => {
                   <div className="flex flex-col w-full relative" ref={dropdownRefChemoStatus}>
                     <label htmlFor="chemoStatus" className="text-sm font-semibold text-gray-700">Status</label>
                     <input
+                      required
                       type="text"
                       name="CHEMO_STATUS"
                       value={selectedChemoStatus}

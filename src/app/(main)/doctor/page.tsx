@@ -1,3 +1,5 @@
+"use client"
+
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { CircleCheckBig } from 'lucide-react';
@@ -5,8 +7,10 @@ import Image from 'next/image';
 import React from 'react';
 import bg from '../../../../public/background/4.jpg';
 import bg2 from '../../../../public/background/doctor.jpg';
+import { useRouter } from 'next/navigation';
 
 const Doctor = () => {
+  const router = useRouter();
   return (
     <div className="w-full bg-white text-gray-900 p-16 flex flex-col space-y-16 pt-32">
       {/* Header Section */}
@@ -84,11 +88,15 @@ const Doctor = () => {
         <div className="flex flex-col gap-4 justify-center space-x-6 pt-6">
           <Label className="text-lg font-light text-gray-600">Interested? Learn more.</Label>
           <div className="flex gap-4 justify-center">
-            <Button className="bg-red-900 hover:bg-red-800 rounded-full px-6 py-3 text-lg text-white shadow-lg">
+            <Button className="bg-red-900 hover:bg-red-800 rounded-full px-6 py-3 text-lg text-white shadow-lg"
+              onClick={() => router.push('/tutorial')}
+            >
               How to use CSS
             </Button>
-            <Button className="bg-red-900 hover:bg-red-800 rounded-full px-6 py-3 text-lg text-white shadow-lg">
-              Why Doctors Use CSS
+            <Button className="bg-red-900 hover:bg-red-800 rounded-full px-6 py-3 text-lg text-white shadow-lg"
+              onClick={() => router.push('/patient')}
+            >
+              Why Patients use CSS
             </Button>
           </div>
         </div>

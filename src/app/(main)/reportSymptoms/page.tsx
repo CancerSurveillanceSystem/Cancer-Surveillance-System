@@ -118,13 +118,20 @@ const ReportSymptomsPage = () => {
           throw new Error(`Error: ${response.status} ${response.statusText}`);
         }
         const data: Symptom[] = await response.json();
-        setter(data);
+        setter((prev) => {
+          // Add only unique symptoms based on symptom_NAME
+          const newSymptoms = data.filter(
+            (symptom) => !prev.some((existing) => existing.symptom_NAME === symptom.symptom_NAME)
+          );
+          return [...prev, ...newSymptoms];
+        });
       } catch (err) {
         console.error(err);
       }
     };
 
     if (bodysiteId) {
+      // Fetch symptoms based on bodysiteId
       fetchSymptoms(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ls?cancerType=${bodysiteId}`,
         setLocalSymptoms
@@ -142,7 +149,42 @@ const ReportSymptomsPage = () => {
         setTreatmentEffectsSymptoms
       );
     }
-  }, [bodysiteId]);
+
+    // Fetch and add bodysiteId 25 symptoms once, if not already added
+    const fetchBodysite25Symptoms = async () => {
+      // Check if bodysite 25 symptoms are already in the state
+      const bodysite25SymptomsFetched = [
+        ...LocalSymptoms,
+        ...SystemicSymptoms,
+        ...QualitySymptoms,
+        ...TreatmentEffectsSymptoms
+      ].some(
+        (symptom) => symptom.symptomsurvey_ID === 25
+      );
+      if (!bodysite25SymptomsFetched) {
+        fetchSymptoms(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ls?cancerType=25`,
+          setLocalSymptoms
+        );
+        fetchSymptoms(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ss?cancerType=25`,
+          setSystemicSymptoms
+        );
+        fetchSymptoms(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/qol?cancerType=25`,
+          setQualitySymptoms
+        );
+        fetchSymptoms(
+          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/tse?cancerType=25`,
+          setTreatmentEffectsSymptoms
+        );
+      }
+    };
+
+    fetchBodysite25Symptoms();
+  }, [bodysiteId, LocalSymptoms, SystemicSymptoms, QualitySymptoms, TreatmentEffectsSymptoms]);
+
+
 
   const handleSymptomClick = (
     symptom: Symptom,

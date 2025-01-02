@@ -1090,7 +1090,6 @@ export const DoctorSidebar = () => {
 
   const [loading, setLoading] = useState(false); // Loading state
 
-
   const handleSubmitMessage = async (e: FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
@@ -1116,6 +1115,7 @@ export const DoctorSidebar = () => {
       if (!response.ok) {
         console.error("Failed to send notification");
       } else {
+        toast({ title: "Email sent successfully!" })
         setNotificationData({
           title: "",
           content: "",

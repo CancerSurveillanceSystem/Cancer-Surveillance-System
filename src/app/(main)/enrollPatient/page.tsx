@@ -258,9 +258,10 @@ const EnrollPatient: React.FC = () => {
                   name="USER_CONTACTNO"
                   value={formData.USER_CONTACTNO}
                   onChange={handleChange}
-                  className="mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-red-500 text-black"
+                  className={`mt-1 p-2 border border-gray-300 rounded focus:outline-none focus:border-red-500 text-black ${errors.USER_CONTACTNO ? "border-red-500" : "border-gray-300"}`}
                   placeholder="9123456789"
                 />
+                {errors.USER_CONTACTNO && <p className="text-red-500 text-xs mt-1">{errors.USER_CONTACTNO}</p>}
               </div>
             </div>
 

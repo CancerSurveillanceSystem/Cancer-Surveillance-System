@@ -9,12 +9,12 @@ const EnrollPatientSchema = z.object({
   birthplace: z.string().min(1, "Birthplace is required"),
   gender: z.enum(["male", "female", "other"]),
   marital_status: z.enum(["single", "married", "divorced", "widowed"]),
-  addressNumber: z.string().min(1, "Address number required"),
-  addressStreet: z.string().min(1, "Street is required"),
-  addressCity: z.string().min(1, "City is required"),
-  addressRegion: z.string().min(1, "Region is required"),
-  addressZipcode: z.string().min(4, "Zipcode should be at least 4 characters"),
-  USER_CONTACTNO: z.string(),
+  addressNumber: z.string(),
+  addressStreet: z.string(),
+  addressCity: z.string(),
+  addressRegion: z.string(),
+  addressZipcode: z.string(),
+  USER_CONTACTNO: z.string().min(1, "Contact number is required"),
 });
 
 export default EnrollPatientSchema;

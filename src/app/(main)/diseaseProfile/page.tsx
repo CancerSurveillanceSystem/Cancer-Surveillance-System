@@ -252,7 +252,8 @@ const DiseaseProfile = () => {
 
   const validateForm = (): Errors => {
     const newErrors: Errors = {};
-    const skipValidationKeys = ["histo_pathology", "disease_tstage", "disease_nstage", "disease_mstage", "disease_gstage"];
+    const skipValidationKeys = ["disease_tstage", "disease_nstage", "disease_mstage", "disease_gstage", "metastatic_notes",
+      "stage_type"];
 
     Object.keys(formData).forEach((key) => {
       if (!skipValidationKeys.includes(key) && !formData[key as keyof FormData] && key !== "other_primary") {
@@ -288,6 +289,7 @@ const DiseaseProfile = () => {
     }
     if (Object.keys(formErrors).length > 0) {
       setErrors(formErrors);
+      console.log(formErrors);
       return;
     }
     setLoading(true);
@@ -581,6 +583,9 @@ const DiseaseProfile = () => {
       }
       if (dropdownRefMetastatic.current && !dropdownRefMetastatic.current.contains(event.target as Node)) {
         setMetastaticDropdownOpen(false)
+      }
+      if (dropdownRefStatus.current && !dropdownRefStatus.current.contains(event.target as Node)) {
+        setStatusDropdownOpen(false)
       }
     };
 
@@ -1198,9 +1203,12 @@ const DiseaseProfile = () => {
 
               <div className="flex flex-col h-full gap-4">
                 <div className="relative" ref={dropdownRefMetastatic}>
-                  <label htmlFor="metastatic_sites" className="text-sm font-semibold text-gray-700">
-                    Metastatic Involvement
-                  </label>
+                  <div className="flex flex-col justify-center">
+                    <label htmlFor="patient_status" className="text-sm font-semibold text-gray-700">
+                      Metastatic Involvement
+                    </label>
+                    <label className="text-xs text-zinc-400">*Can select multiple</label>
+                  </div>
                   <div className="flex flex-wrap border border-gray-300 rounded mt-1 p-2 items-center">
                     {selectedMetastaticSites.map((site) => (
                       <span
@@ -1265,9 +1273,12 @@ const DiseaseProfile = () => {
               <Separator className="" />
 
               <div className="relative" ref={dropdownRefMultiple}>
-                <label htmlFor="multiple_primary_sites" className="text-sm font-semibold text-gray-700">
-                  Multiple Primary Sites
-                </label>
+                <div className="flex flex-col justify-center">
+                  <label htmlFor="patient_status" className="text-sm font-semibold text-gray-700">
+                    Multiple Primary Sites
+                  </label>
+                  <label className="text-xs text-zinc-400">*Can select multiple</label>
+                </div>
                 <div className="flex flex-wrap border border-gray-300 rounded mt-1 p-2 ">
                   {selectedSites.map((site) => (
                     <span
@@ -1397,16 +1408,19 @@ const DiseaseProfile = () => {
                 </div>
               </div>
 
-              <div className="flex justify-center mt-8">
+              <div className="flex justify-center mt-8 gap-2">
                 <label className="text-lg text-black font-bold tracking-widest">PATIENT STATUS</label>
               </div>
               <Separator className="" />
 
               <div className="flex flex-col">
                 <div className="relative" ref={dropdownRefStatus}>
-                  <label htmlFor="patient_status" className="text-sm font-semibold text-gray-700">
-                    Patient Status
-                  </label>
+                  <div className="flex flex-col justify-center">
+                    <label htmlFor="patient_status" className="text-sm font-semibold text-gray-700">
+                      Patient Status
+                    </label>
+                    <label className="text-xs text-zinc-400">*Can select multiple</label>
+                  </div>
                   <div className="flex flex-wrap border border-gray-300 rounded mt-1 p-2 items-center">
                     {selectedStatuses.map((status) => (
                       <span

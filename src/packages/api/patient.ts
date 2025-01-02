@@ -42,6 +42,7 @@ const UserSchema = z.object({
   userStatus: z.enum(["Active", "Inactive"]),
   userCreatedOn: z.string(),
   userUpdatedOn: z.string(),
+  userContactno: z.string(),
 });
 
 const PatientSchema = z.object({

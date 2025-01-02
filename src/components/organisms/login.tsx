@@ -7,9 +7,7 @@ import { Label } from '../ui/label'
 import Image from 'next/image'
 import Logo from '/public/logo/upm-colored.png'
 import { Input } from '../ui/input'
-import DoctorSchema from '@/packages/api/doctor'
 import Link from 'next/link'
-import { PatientSchema } from '@/packages/api/patient'
 import { Contact2Icon, HeartPulseIcon, HouseIcon, InfoIcon, LucideBookA, MenuIcon, StethoscopeIcon } from 'lucide-react'
 import {
   Sheet,
@@ -69,10 +67,12 @@ export const Login = () => {
 export const LoginForm = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false); // Loading state
   const router = useRouter();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true); // Set loading to true when form is submitted
 
     const loginData = {
       EMAIL: email,
@@ -91,39 +91,21 @@ export const LoginForm = () => {
       if (response.ok) {
         const data = await response.json();
 
-        try {
-          let parsedData;
-
-          if ('patientId' in data) {
-            parsedData = PatientSchema.parse(data);
-          } else if ('doctorId' in data) {
-            parsedData = DoctorSchema.parse(data);
-          } else {
-            throw new Error("Unknown user type in response");
-          }
-
-          localStorage.setItem('user', JSON.stringify(parsedData));
-
-          if ('patientId' in data) {
-            router.push("/reportSymptoms");
-          } else if ('doctorId' in data) {
-            router.push("/dashboard");
-          } else {
-            throw new Error("Unknown user type in response");
-          }
-
-          // Reload the page after navigation
-          setTimeout(() => {
-            window.location.reload();
-          }, 1000); // Adjust the timeout if needed
-        } catch (validationError) {
-          console.error('Validation failed:', validationError);
+        if ('patientId' in data) {
+          router.push('/reportSymptoms');
+        } else if ('doctorId' in data) {
+          router.push('/dashboard');
         }
+
+        localStorage.setItem('user', JSON.stringify(data));
+        setTimeout(() => window.location.reload(), 1000);
       } else {
         console.log('Login failed');
       }
     } catch (error) {
       console.log('Error:', error);
+    } finally {
+      setIsLoading(false); // Set loading to false after response
     }
   };
 
@@ -165,8 +147,16 @@ export const LoginForm = () => {
             <Button
               type="submit"
               className="w-full bg-red-900 text-white text-lg py-2 rounded-lg hover:bg-red-800 transition-shadow shadow-sm"
+              disabled={isLoading} // Disable button while loading
             >
-              Submit
+              {isLoading ? (
+                <div className="flex items-center justify-center">
+                  <div className="w-6 h-6 border-4 border-t-transparent border-white rounded-full animate-spin"></div>
+                  <span className="ml-2">Logging in...</span>
+                </div>
+              ) : (
+                'Submit'
+              )}
             </Button>
             <a href="/forgotPassword" className="text-sm text-gray-600 hover:underline">
               Forgot password?
@@ -196,7 +186,7 @@ export const LoginNavbar = () => {
 
   return (
     <div className='absolute top-0 w-full h-20 bg-red-900 transition-all duration-300 flex justify-between items-center  px-8 md:px-2'>
-      <div className='group text-black h-12 sm:w-[355px] flex items-center hover:bg-zinc-200 justify-center rounded-md transition-all duration-300 ease-in-out cursor-pointer'
+      <div className='group text-black h-12 sm:w-[355px] flex items-center justify-center rounded-md transition-all duration-300 ease-in-out cursor-pointer'
         onClick={() => router.push('/')}
       >
         <Image
@@ -206,10 +196,10 @@ export const LoginNavbar = () => {
           height={60}
           width={60}
         />
-        <Label className='text-xl text-white tracking-wider group-hover:text-black cursor-pointer sm:flex hidden'>
+        <Label className='text-xl text-white tracking-wider cursor-pointer sm:flex hidden'>
           Cancer Surveillance System
         </Label>
-        <Label className='text-xl text-white tracking-wider group-hover:text-black cursor-pointer sm:hidden flex'>
+        <Label className='text-xl text-white tracking-wider cursor-pointer sm:hidden flex'>
           CSS
         </Label>
       </div>

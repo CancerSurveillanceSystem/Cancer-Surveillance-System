@@ -6,6 +6,7 @@ import React, { useEffect, useState } from 'react';
 import { z } from 'zod';
 import Dropzone from '@/components/ui/dropzone';
 import { Label } from '@/components/ui/label';
+import { useToast } from '@/hooks/use-toast';
 
 type DiseaseResponse = z.infer<typeof DiseaseZodSchema>;
 interface WorkupData {
@@ -114,6 +115,8 @@ const SubmitLaboratoryPage = () => {
     setSelectedWorkup(workupName);
   };
 
+  const { toast } = useToast()
+
   const handleSubmit = async () => {
     let workup_id;
     let doctorData;
@@ -175,7 +178,7 @@ const SubmitLaboratoryPage = () => {
       }
 
       // setWorkups(prevWorkups => prevWorkups.filter(workup => workup.workup_NAME !== selectedWorkup));
-
+      toast({ title: "Workup added successfully!" });
       setSelectedWorkup("");
       setLabfile(null)
       setFileList([]);
