@@ -205,7 +205,7 @@ const NotificationPage = () => {
 
     const requestBody = {
       subject: formData.subject,
-      messageBody: `>${messageToReply}\n\n${formData.messageBody}`,
+      messageBody: `|>${messageToReply}<| ${formData.messageBody}`,
       recieverID: formData.recieverID,
       senderID: formData.senderID,
       recieverEmail: formData.recieverEmail,

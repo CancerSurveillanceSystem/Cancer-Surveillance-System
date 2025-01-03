@@ -17,7 +17,6 @@ interface Symptom {
 const ReportSymptomsPage = () => {
   const [patientId, setPatientId] = useState("");
   const [, setDiseaseData] = useState<DiseaseResponse | null>(null);
-  const [bodysiteId, setBodySiteId] = useState<number>(0);
   const [surveyResponseID, setSurveyResponseID] = useState<number>(0);
   const [, setError] = useState<string | null>(null);
   const [symptomNotes, setSymptomNotes] = useState<string>("");
@@ -68,11 +67,6 @@ const ReportSymptomsPage = () => {
   }, [patientId]);
 
   useEffect(() => {
-    console.log(patientId)
-    console.log(bodysiteId)
-  })
-
-  useEffect(() => {
     const fetchDiseaseData = async () => {
       const userData = localStorage.getItem("user");
       if (userData) {
@@ -90,7 +84,24 @@ const ReportSymptomsPage = () => {
           const jsonResponse = await response.json();
           const validatedData = DiseaseZodSchema.parse(jsonResponse);
           setDiseaseData(validatedData);
-          setBodySiteId(validatedData.bodySite.bodysiteId);
+          // setBodySiteId(validatedData.bodySite.bodysiteId);
+          fetchSymptoms(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ls?cancerType=${validatedData.bodySite.bodysiteId}`,
+            setLocalSymptoms
+          );
+          fetchSymptoms(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ss?cancerType=${validatedData.bodySite.bodysiteId}`,
+            setSystemicSymptoms
+          );
+          fetchSymptoms(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/qol?cancerType=${validatedData.bodySite.bodysiteId}`,
+            setQualitySymptoms
+          );
+          fetchSymptoms(
+            `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/tse?cancerType=${validatedData.bodySite.bodysiteId}`,
+            setTreatmentEffectsSymptoms
+          );
+          fetchBodysite25Symptoms();
         } catch (err) {
           if (err instanceof z.ZodError) {
             setError("Validation Error: Invalid API Response");
@@ -107,84 +118,78 @@ const ReportSymptomsPage = () => {
     fetchDiseaseData();
   }, []);
 
-  useEffect(() => {
-    const fetchSymptoms = async (
-      endpoint: string,
-      setter: React.Dispatch<React.SetStateAction<Symptom[]>>
-    ) => {
-      try {
-        const response = await fetch(endpoint);
-        if (!response.ok) {
-          throw new Error(`Error: ${response.status} ${response.statusText}`);
-        }
-        const data: Symptom[] = await response.json();
-        setter((prev) => {
-          // Add only unique symptoms based on symptom_NAME
-          const newSymptoms = data.filter(
-            (symptom) => !prev.some((existing) => existing.symptom_NAME === symptom.symptom_NAME)
-          );
-          return [...prev, ...newSymptoms];
-        });
-      } catch (err) {
-        console.error(err);
+  const fetchSymptoms = async (
+    endpoint: string,
+    setter: React.Dispatch<React.SetStateAction<Symptom[]>>
+  ) => {
+    try {
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error(`Error: ${response.status} ${response.statusText}`);
       }
-    };
+      const data: Symptom[] = await response.json();
+      setter((prev) => {
+        // Add only unique symptoms based on symptom_NAME
+        const newSymptoms = data.filter(
+          (symptom) => !prev.some((existing) => existing.symptom_NAME === symptom.symptom_NAME)
+        );
+        return [...prev, ...newSymptoms];
+      });
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
-    if (bodysiteId) {
-      // Fetch symptoms based on bodysiteId
+  // if (bodysiteId) {
+  //   // Fetch symptoms based on bodysiteId
+  //   fetchSymptoms(
+  //     `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ls?cancerType=${bodysiteId}`,
+  //     setLocalSymptoms
+  //   );
+  //   fetchSymptoms(
+  //     `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ss?cancerType=${bodysiteId}`,
+  //     setSystemicSymptoms
+  //   );
+  //   fetchSymptoms(
+  //     `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/qol?cancerType=${bodysiteId}`,
+  //     setQualitySymptoms
+  //   );
+  //   fetchSymptoms(
+  //     `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/tse?cancerType=${bodysiteId}`,
+  //     setTreatmentEffectsSymptoms
+  //   );
+  // }
+
+  // Fetch and add bodysiteId 25 symptoms once, if not already added
+  const fetchBodysite25Symptoms = async () => {
+    // Check if bodysite 25 symptoms are already in the state
+    const bodysite25SymptomsFetched = [
+      ...LocalSymptoms,
+      ...SystemicSymptoms,
+      ...QualitySymptoms,
+      ...TreatmentEffectsSymptoms
+    ].some(
+      (symptom) => symptom.symptomsurvey_ID === 25
+    );
+    if (!bodysite25SymptomsFetched) {
       fetchSymptoms(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ls?cancerType=${bodysiteId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ls?cancerType=25`,
         setLocalSymptoms
       );
       fetchSymptoms(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ss?cancerType=${bodysiteId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ss?cancerType=25`,
         setSystemicSymptoms
       );
       fetchSymptoms(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/qol?cancerType=${bodysiteId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/qol?cancerType=25`,
         setQualitySymptoms
       );
       fetchSymptoms(
-        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/tse?cancerType=${bodysiteId}`,
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/tse?cancerType=25`,
         setTreatmentEffectsSymptoms
       );
     }
-
-    // Fetch and add bodysiteId 25 symptoms once, if not already added
-    const fetchBodysite25Symptoms = async () => {
-      // Check if bodysite 25 symptoms are already in the state
-      const bodysite25SymptomsFetched = [
-        ...LocalSymptoms,
-        ...SystemicSymptoms,
-        ...QualitySymptoms,
-        ...TreatmentEffectsSymptoms
-      ].some(
-        (symptom) => symptom.symptomsurvey_ID === 25
-      );
-      if (!bodysite25SymptomsFetched) {
-        fetchSymptoms(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ls?cancerType=25`,
-          setLocalSymptoms
-        );
-        fetchSymptoms(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/ss?cancerType=25`,
-          setSystemicSymptoms
-        );
-        fetchSymptoms(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/qol?cancerType=25`,
-          setQualitySymptoms
-        );
-        fetchSymptoms(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/symptom/survey/symptomname/tse?cancerType=25`,
-          setTreatmentEffectsSymptoms
-        );
-      }
-    };
-
-    fetchBodysite25Symptoms();
-  }, [bodysiteId, LocalSymptoms, SystemicSymptoms, QualitySymptoms, TreatmentEffectsSymptoms]);
-
-
+  };
 
   const handleSymptomClick = (
     symptom: Symptom,

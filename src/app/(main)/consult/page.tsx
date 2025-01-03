@@ -181,7 +181,7 @@ const ConsultPage = () => {
 			newErrors.CONSULT_RXPLAN = "RX Plan is required.";
 		if (!formData.CONSULT_PATIENTSTATUS)
 			newErrors.CONSULT_PATIENTSTATUS = "Patient status is required.";
-
+		console.log("THIS AN ERROR CURRIEEEEEEEe", newErrors);
 		setErrors(newErrors);
 		return Object.keys(newErrors).length === 0;
 	};
@@ -381,6 +381,8 @@ const ConsultPage = () => {
 						setPatientSearchTerm(
 							`${patientData.user.userFirstname} ${patientData.user.userLastname} (${patientData.user.userEmail})`
 						);
+
+						setFormData({ ...formData, PATIENT_ID: patientData.patientId });
 
 						try {
 							const response = await fetch(`${process.env.NEXT_PUBLIC_BACKEND_URL}css/patient/getConsultInfo/${patientData.patientId}`);
@@ -812,7 +814,7 @@ const ConsultPage = () => {
 															type={field === 'items' || field === 'price' ? 'number' : 'text'}
 															value={drug[field as keyof Drug]}
 															onChange={(e) => handleDrugChange(index, field, e.target.value)}
-															className="w-full rounded-lg p-2 focus:ring-2 focus:ring-red-700 focus:outline-none"
+															className="w-full rounded-lg p-2 focus:ring-2 focus:ring-red-700 focus:outline-none text-black"
 														/>
 													</td>
 												))}

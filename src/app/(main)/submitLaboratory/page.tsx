@@ -27,7 +27,6 @@ interface Workup {
 const SubmitLaboratoryPage = () => {
   const [, setDiseaseData] = useState<DiseaseResponse | null>(null);
   const [, setBodySiteName] = useState("");
-  const [bodysiteId, setBodySiteId] = useState<number>(0);
   const [error, setError] = useState<string | null>(null);
   const [workups, setWorkups] = useState<WorkupData[]>([]);
   const [selectedWorkup, setSelectedWorkup] = useState<string>("");
@@ -75,7 +74,7 @@ const SubmitLaboratoryPage = () => {
           const validatedData = DiseaseZodSchema.parse(jsonResponse);
           setDiseaseData(validatedData);
           setBodySiteName(validatedData.bodySite.bodysiteName);
-          setBodySiteId(validatedData.bodySite.bodysiteId);
+          fetchWorkups(validatedData.bodySite.bodysiteId);
         } catch (err) {
           if (err instanceof z.ZodError) {
             setError("Validation Error: Invalid API Response");
@@ -92,24 +91,20 @@ const SubmitLaboratoryPage = () => {
     fetchDiseaseData();
   }, []);
 
-  useEffect(() => {
-    const fetchWorkups = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/workup/fetchbycancertype?cancerType=${bodysiteId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch workup data.");
-        }
-        const data: WorkupData[] = await response.json();
-        setWorkups(data);
-      } catch (error) {
-        console.error(error);
+  const fetchWorkups = async (bodysiteId: number) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/workup/fetchbycancertype?cancerType=${bodysiteId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch workup data.");
       }
-    };
-
-    fetchWorkups();
-  }, [bodysiteId]);
+      const data: WorkupData[] = await response.json();
+      setWorkups(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleSelectionChange = (workupName: string) => {
     setSelectedWorkup(workupName);

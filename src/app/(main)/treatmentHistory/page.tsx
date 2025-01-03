@@ -344,8 +344,8 @@ const TreatmentHistoryForm = () => {
     SURGERY_DATE: "",
     SURGERY_FINDINGS: "",
     SURGERY_INTENT: "",
-    SURGERY_SURGEON: "",
-    SURGERY_HOSPITAL: "",
+    SURGERY_SURGEON: "1",
+    SURGERY_HOSPITAL: "1",
     SURGERY_ENCODER: 1
   });
 
@@ -430,8 +430,8 @@ const TreatmentHistoryForm = () => {
           SURGERY_DATE: "",
           SURGERY_FINDINGS: "",
           SURGERY_INTENT: "",
-          SURGERY_SURGEON: "",
-          SURGERY_HOSPITAL: "",
+          SURGERY_SURGEON: "1",
+          SURGERY_HOSPITAL: "1",
           SURGERY_ENCODER: 4, // Reset to the default value if needed
         });
       } else {
@@ -452,8 +452,8 @@ const TreatmentHistoryForm = () => {
     RADRX_BODYSITE: "",
     RADRX_STATUS: "",
     RADRX_ISCOMPLETED: "N",
-    RADRX_FACILITY: "",
-    RADRX_DOCTOR: "",
+    RADRX_FACILITY: "1",
+    RADRX_DOCTOR: "1",
     RADRX_ENCODER: 1
   });
 
@@ -529,8 +529,8 @@ const TreatmentHistoryForm = () => {
           RADRX_BODYSITE: "",
           RADRX_STATUS: "Pending",
           RADRX_ISCOMPLETED: "N",
-          RADRX_FACILITY: "",
-          RADRX_DOCTOR: "",
+          RADRX_FACILITY: "1",
+          RADRX_DOCTOR: "1",
           RADRX_ENCODER: 1,
         });
       } else {
@@ -550,7 +550,7 @@ const TreatmentHistoryForm = () => {
     hormonalEndDate: "",
     hormonalStatus: "",
     hormonalRxNotes: "",
-    hormonalDoctorId: "",
+    hormonalDoctorId: "1",
     hormonalEncoderId: 1,
   });
 
@@ -622,7 +622,7 @@ const TreatmentHistoryForm = () => {
           hormonalEndDate: "",
           hormonalStatus: "",
           hormonalRxNotes: "",
-          hormonalDoctorId: "",
+          hormonalDoctorId: "1",
           hormonalEncoderId: 1,
         });
       } else {
@@ -642,8 +642,8 @@ const TreatmentHistoryForm = () => {
     immunorxStatus: "",
     immunorxNotes: "",
     immunorxIsCompleted: "Y",
-    immunorxFacilityId: "",
-    immunorxDoctorId: "",
+    immunorxFacilityId: "1",
+    immunorxDoctorId: "1",
     immunorxEncoderId: 1
   });
 
@@ -718,8 +718,8 @@ const TreatmentHistoryForm = () => {
           immunorxStatus: "",
           immunorxNotes: "",
           immunorxIsCompleted: "Yes",
-          immunorxFacilityId: "",
-          immunorxDoctorId: "",
+          immunorxFacilityId: "1",
+          immunorxDoctorId: "1",
           immunorxEncoderId: 1,
         });
       } else {
@@ -741,8 +741,8 @@ const TreatmentHistoryForm = () => {
     CHEMO_STATUS: "",
     CHEMO_NOTES: "",
     CHEMO_ISCOMPLETED: "Yes",
-    CHEMO_FACILITY: "",
-    CHEMO_DOCTOR: "",
+    CHEMO_FACILITY: "1",
+    CHEMO_DOCTOR: "1",
     CHEMO_ENCODER: 1
   });
 
@@ -846,8 +846,8 @@ const TreatmentHistoryForm = () => {
           CHEMO_STATUS: "",
           CHEMO_NOTES: "",
           CHEMO_ISCOMPLETED: "Yes",
-          CHEMO_FACILITY: "",
-          CHEMO_DOCTOR: "",
+          CHEMO_FACILITY: "1",
+          CHEMO_DOCTOR: "1",
           CHEMO_ENCODER: 1,
         });
       } else {

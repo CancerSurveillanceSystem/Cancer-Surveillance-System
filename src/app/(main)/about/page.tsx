@@ -11,7 +11,7 @@ import guillermo from '/public/team/guillermo.png';
 import panes from '/public/team/panes.png';
 import sheila from '/public/team/sheila.jpg';
 import currie from '/public/team/currie.png';
-import ron from '/public/team/ron.png';
+import ron from '/public/team/ron.jpg';
 import nathan from '/public/team/nathan.png';
 import demi from '/public/team/demi.png';
 import bg from '../../../../public/background/2.jpg'

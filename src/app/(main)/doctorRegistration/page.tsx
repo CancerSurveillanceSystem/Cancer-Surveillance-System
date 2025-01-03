@@ -135,9 +135,11 @@ const DoctorRegistration: React.FC = () => {
   };
 
   const { toast } = useToast();
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
 
     if (validateForm()) {
       const today = new Date();
@@ -278,6 +280,9 @@ const DoctorRegistration: React.FC = () => {
         setDoctorESig(null);
       } catch (error) {
         console.error('Error submitting form:', error);
+        toast({ title: "An error occurred. Please try again." });
+      } finally {
+        setLoading(false); // Stop loading
       }
     } else {
       console.log("Form has errors");
@@ -696,11 +701,21 @@ const DoctorRegistration: React.FC = () => {
               <div className="col-span-2 flex justify-center">
                 <button
                   type="submit"
-                  className="bg-red-900 text-white px-6 py-3 rounded-md hover:bg-red-800 focus:outline-none focus:ring focus:ring-red-300"
+                  disabled={loading} // Disable button when loading
+                  className={`bg-red-900 text-white px-6 py-3 rounded-md flex items-center justify-center space-x-2
+                  ${loading ? "opacity-70 cursor-not-allowed" : "hover:bg-red-800 focus:outline-none focus:ring focus:ring-red-300"}`}
                 >
-                  Register
+                  {loading ? (
+                    <>
+                      <div className="w-4 h-4 border-2 border-t-transparent border-white rounded-full animate-spin"></div>
+                      <span>Creating your account...</span>
+                    </>
+                  ) : (
+                    "Register"
+                  )}
                 </button>
               </div>
+
               <Separator />
               <div className="flex gap-2 justify-center">
                 <Label className='font-normal text-base text-black'>Already registered?</Label>

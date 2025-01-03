@@ -23,7 +23,6 @@ const RequestDocumentsPage = () => {
 
   const [, setDiseaseData] = useState<DiseaseResponse | null>(null);
   const [bodysiteName, setBodySiteName] = useState("");
-  const [bodysiteId, setBodySiteId] = useState<number>(0);
   const [, setError] = useState<string | null>(null);
 
   const [userInfo, setUserInfo] = useState({
@@ -81,7 +80,7 @@ const RequestDocumentsPage = () => {
           const validatedData = DiseaseZodSchema.parse(jsonResponse);
           setDiseaseData(validatedData);
           setBodySiteName(validatedData.bodySite.bodysiteName);
-          setBodySiteId(validatedData.bodySite.bodysiteId);
+          fetchWorkups(validatedData.bodySite.bodysiteId);
         } catch (err) {
           if (err instanceof z.ZodError) {
             setError("Validation Error: Invalid API Response");
@@ -257,24 +256,20 @@ const RequestDocumentsPage = () => {
   const [workups, setWorkups] = useState<WorkupData[]>([]);
   const [selectedWorkup, setSelectedWorkup] = useState<string>("");
 
-  useEffect(() => {
-    const fetchWorkups = async () => {
-      try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_BACKEND_URL}css/workup/fetchbycancertype?cancerType=${bodysiteId}`
-        );
-        if (!response.ok) {
-          throw new Error("Failed to fetch workup data.");
-        }
-        const data: WorkupData[] = await response.json();
-        setWorkups(data);
-      } catch (error) {
-        console.error(error);
+  const fetchWorkups = async (bodysiteId: number) => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_BACKEND_URL}css/workup/fetchbycancertype?cancerType=${bodysiteId}`
+      );
+      if (!response.ok) {
+        throw new Error("Failed to fetch workup data.");
       }
-    };
-
-    fetchWorkups();
-  }, [bodysiteId]);
+      const data: WorkupData[] = await response.json();
+      setWorkups(data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const handleSelectionChange = (workupName: string, workupReferral?: string | null) => {
     setSelectedWorkup(workupName);
